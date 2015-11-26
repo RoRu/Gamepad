@@ -1,5 +1,5 @@
 # Gamepad
 
-    Android
+Android
 
 The application for controlling robots on field. 
