@@ -1,2 +1,2 @@
 # Gamepad
-Just fucking StarCraft with robots.
+The application for controlling robots on field. 
