@@ -8,7 +8,7 @@ import android.os.AsyncTask;
 public class Client extends AsyncTask <Void, Void, String> {
     private String serverIP     = "192.168.0.105";
     private int    serverPort   = 8080;
-    private String cmdLine      = null;
+    private String messageFromServer      = null;
     private String data         = null;
 
     @Override
@@ -23,12 +23,11 @@ public class Client extends AsyncTask <Void, Void, String> {
         }
 
         try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            OutputStream sout = socket.getOutputStream();
+            BufferedReader in  = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            OutputStream   out = socket.getOutputStream();
             while(true) {
-                cmdLine = br.readLine();
-                data = cmdLine;
-                System.out.println("The server was very polite. It sent me this : " + cmdLine);
+                messageFromServer = in.readLine();
+                data = messageFromServer;
             }
         }
         catch (IOException e) {}
@@ -38,6 +37,6 @@ public class Client extends AsyncTask <Void, Void, String> {
 
     @Override
     protected void onPostExecute(String result) {
-        Client.this.data = result;
+        this.data = result;
     }
 }
