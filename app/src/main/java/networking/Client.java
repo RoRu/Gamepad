@@ -5,11 +5,11 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import android.os.AsyncTask;
 
-public class Client extends AsyncTask <Void, Void, String> {
-    private String serverIP     = "192.168.0.105";
-    private int    serverPort   = 8080;
-    private String messageFromServer      = null;
-    private String data         = null;
+public class Client {//extends AsyncTask <Void, Void, String> {
+    /*private String serverIP          = "192.168.0.203";
+    private int    serverPort        = 8080;
+    private String messageFromServer = null;
+    private String data              = null;
 
     @Override
     protected String doInBackground(Void... arg0) {
@@ -38,5 +38,5 @@ public class Client extends AsyncTask <Void, Void, String> {
     @Override
     protected void onPostExecute(String result) {
         this.data = result;
-    }
+    }*/
 }

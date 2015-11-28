@@ -20,7 +20,6 @@ public class MainActivity extends Activity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(new Field(this));
-        new Client().execute();
+        //new Client().execute();
     }
 }
-
