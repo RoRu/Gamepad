@@ -17,7 +17,7 @@ import android.os.AsyncTask;
 public class Field extends View {
 
     private RectF[] robots;
-    private float[] coord;
+    private float[] coords;
     private Paint roboPaint;
     private Paint textPaint;
     private float eX;
@@ -27,6 +27,7 @@ public class Field extends View {
     private String txt;
     private boolean ifFirstRun;
     private MyClient netClient;
+    private byte[] messageToServer;
 
 
 
@@ -46,11 +47,11 @@ public class Field extends View {
         roboRadius = dispM.heightPixels / 20;
         txt = Float.toString(eX) + "\n" + Float.toString(eY);
 
-        coord = new float[]{0, 100, 200, 1, 200, 300};//, 2, 300, 400, 3, 500, 400, 4, 500, 100};
-        robots = new RectF[coord.length / 3];
-        for(int i = 1; i < coord.length - 1; i+=3) {
-            float left = coord[i] * eX - roboRadius;
-            float top  = coord[i+1] * eY - roboRadius;
+        coords = new float[]{0, 100, 200, 1, 200, 300};//, 2, 300, 400, 3, 500, 400, 4, 500, 100};
+        robots = new RectF[coords.length / 3];
+        for(int i = 1; i < coords.length - 1; i+=3) {
+            float left = coords[i] * eX - roboRadius;
+            float top  = coords[i+1] * eY - roboRadius;
             robots[(i-1)/3] = new RectF(left, top, left + 2*roboRadius, top + 2*roboRadius);
         }
 
@@ -63,10 +64,6 @@ public class Field extends View {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            /*float newX;
-            float newY;
-            newX = event.getX();
-            newY = event.getY();*/
             onTouch(event.getX(), event.getY());
         }
         return false;
@@ -81,29 +78,37 @@ public class Field extends View {
         }
         if (robotSelected > -1) {
             robots[robotSelected].offsetTo(newX - 50, newY - 50);
-            txt = Integer.toString(robotSelected);
+            coords[robotSelected*3+1] = newX / eX;
+            coords[robotSelected*3+2] = newY / eY;
+            messageToServer = floatParse(coords);
+            txt = Float.toString(coords[1]);
+            netClient.toSend = true;
+            /*try {
+                txt = new String(messageToServer, "Cp1252");
+            } catch (UnsupportedEncodingException e) {}*/
             invalidate();
             return true;
         }
         return false;
     }
 
-    private void updateCanvas(byte[] newCoords) {
+    private void updateCanvas(String newCoords) {
         stringParse(newCoords);
-        updateRobotsCoordinates();
+        updateCoordinatesOnMessage();
         invalidate();
     }
-
-    private void updateRobotsCoordinates() {
-        for(int i = 1; i < coord.length - 1; i+=3) {
-            float left = coord[i] * eX - roboRadius;
-            float top  = coord[i+1] * eY - roboRadius;
-            //robots[(i-1)/3] = new RectF(left, top, left + 2*roboRadius, top + 2*roboRadius);
+    
+    
+    private void updateCoordinatesOnMessage() {
+        for(int i = 1; i < coords.length - 1; i+=3) {
+            float left = coords[i] * eX - roboRadius;
+            float top  = coords[i+1] * eY - roboRadius;
             robots[(i-1)/3].left = left;
             robots[(i-1)/3].right = left + 2*roboRadius;
             robots[(i-1)/3].top = top;
             robots[(i-1)/3].bottom = top + 2*roboRadius;
         }
+
     }
 
     @Override
@@ -121,62 +126,43 @@ public class Field extends View {
             canvas.drawRoundRect(r, 150, 150, roboPaint);
         }
     }
-
-    private void stringParse(byte[] st) {
-        byte[] b = new byte[st.length+1];
-        for (int i = 0; i < b.length-1; i++) {
-            b[i] = st[i];
-        }
-        b[st.length] = 32;
-        String sToFloat = "";
-        //float[] res = new float[6];
-        int lastSpace = 1;
-        coord[0] = b[0] - 48;
-        int count = 1;
-        for (int i = 2; i < b.length; i++) {
-            if(b[i] == 32) {
-                for(int j = lastSpace+1; j < i; j++) {
-                    sToFloat += (char)b[j];
-                    //System.out.println("Debug: " + b[j]);
-                }
-                coord[count] = Float.parseFloat(sToFloat);
-                //System.out.println("Debug: " + sToFloat);
-                sToFloat = "";
-                lastSpace = i;
-                count++;
-            }
-        }
-    }
+    
     private void stringParse(String mes) {
         String[] spl = mes.split(" ");
-        for (int i = 0; i < coord.length; i++) {
-            coord[i] = Float.parseFloat(spl[i]);
+        for (int i = 0; i < coords.length; i++) {
+            coords[i] = Float.parseFloat(spl[i]);
         }
     }
 
     public byte[] floatParse(float[] fl) {
         StringBuilder sb = new StringBuilder();
-        for (float f : fl) {
-            sb.append((int)f);
+        for (int i = 0; i < fl.length - 2; i += 3) {
+            sb.append((int)fl[i]);
+            sb.append(" ");
+            sb.append((int)fl[i+1]);
+            sb.append(" ");
+            sb.append((int)fl[i+2]);
             sb.append(" ");
         }
+        sb.deleteCharAt(sb.length() - 1);
         return sb.toString().getBytes();
     }
 
     //==================================================================
-    private class MyClient extends AsyncTask <Void, byte[], String> {
+    private class MyClient extends AsyncTask <Void, String, String> {
         private String serverIP          = "192.168.0.203";
         private int    serverPort        = 8080;
         private String messageFromServer = null;
-        private String data              = null;
+        //private String data              = null;
+        private boolean toSend           = false;
+        //private String messageToSend     = "";
+
 
         @Override
         protected String doInBackground(Void... arg0) {
             Socket socket = null;
             try {
                 socket = new Socket(serverIP, serverPort);
-                //return "YEA";
-                //txt = "Success!";
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -184,16 +170,20 @@ public class Field extends View {
             }
 
             try {
-                InputStream sin = socket.getInputStream();
+                //InputStream sin = socket.getInputStream();
                 OutputStream sout = socket.getOutputStream();
-                byte[] coordMessage = new byte[19];
-                //BufferedReader in  = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                sout.write(49);
+                //byte[] coordMessage = new byte[19];
+                BufferedReader in  = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                //sout.write(49);
                 while(true) {
-                    //messageFromServer = in.readLine();
+                    if(toSend) {
+                        sout.write(messageToServer);
+                    }
+                    messageFromServer = in.readLine();
+                    publishProgress(messageFromServer);
                     //data = messageFromServer;
-                    sin.read(coordMessage);
-                    publishProgress(coordMessage);
+                    //sin.read(coordMessage);
+                    //publishProgress(coordMessage);
                 }
             }
             catch (IOException e) { }
@@ -202,7 +192,7 @@ public class Field extends View {
         }
 
         @Override
-        protected void onProgressUpdate(byte[]... values) {
+        protected void onProgressUpdate(String... values) {
             updateCanvas(values[0]);
         }
 
