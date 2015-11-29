@@ -5,8 +5,6 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
-import drawField.Field;
-import networking.Client;
 
 public class MainActivity extends Activity {
 
