@@ -20,7 +20,7 @@ class Field(content: Context) : View(content) {
                                 { RectF(0f, 0f, 0f, 0f) }
     private val coords          = IntArray(robotsNum*3)
     private val roboPaint       = Paint()
-    private var robotSelected   = 0
+    private var robotSelected   = -1
     private val netClient       = Client()
     private var messageToServer = ""
     private var firstRun        = true
