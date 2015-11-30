@@ -6,17 +6,15 @@ import android.os.Bundle
 import android.view.Window
 import android.view.WindowManager
 
-class MainActivity : Activity() {
+class MainActivity: Activity() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    protected override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // settings for fullscreen and landscape orientation
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN)
+                        WindowManager.LayoutParams.FLAG_FULLSCREEN)
 
         setContentView(Field(this))
-        //new Client().execute();
     }
 }
