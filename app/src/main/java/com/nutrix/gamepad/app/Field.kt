@@ -1,7 +1,10 @@
 package com.nutrix.gamepad.app
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.RectF
 import android.view.MotionEvent
 import android.view.View
 import java.io.*
@@ -17,6 +20,7 @@ class Field(content: Context) : View(content) {
     { RectF(0f, 0f, 0f, 0f) }
     private val coords          = IntArray(robotsNum*3)
     private val roboPaint       = Paint()
+    private var p               = Paint()
     private var robotSelected   = -1
     private val netClient       = Client()
     private var messageToServer = ""
@@ -24,6 +28,8 @@ class Field(content: Context) : View(content) {
     private val roboRadius      : Float
     private val eX              : Float
     private val eY              : Float
+    var heightDisplay: Int = 0
+    var widthDisplay: Int = 0
 
     init {
         roboPaint.color = Color.BLUE
@@ -38,20 +44,56 @@ class Field(content: Context) : View(content) {
         isLongClickable        = false
     }
 
-
     public override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        var bitmap: Bitmap
-        bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.field);
-
-        canvas.drawBitmap(bitmap, x, y, null);
         if(firstRun) {
             netClient.execute()
             firstRun = false
         }
-       /* canvas.drawColor(Color.rgb(0, 139, 69))*/
+
+        canvas.drawColor(Color.rgb(0, 139, 69))
+        drawField(canvas, p)
+
         for(r in robots)
             canvas.drawRoundRect(r, 150f, 150f, roboPaint)
+    }
+
+    public fun drawField(canvas: Canvas, p: Paint) {
+        //DRAW FIELD
+        p.setColor(Color.WHITE)
+        p.setStyle(Paint.Style.STROKE)
+        heightDisplay = getHeight()
+        widthDisplay = getWidth()
+        canvas.drawLine(20.toFloat(), 20.toFloat(), 20.toFloat(), heightDisplay.toFloat() - 20.toFloat(), p)
+        canvas.drawLine(widthDisplay.toFloat() - 20.toFloat(), 20.toFloat(), widthDisplay.toFloat() - 20.toFloat(), heightDisplay.toFloat() - 20.toFloat(), p)
+        canvas.drawLine(widthDisplay.toFloat() - 20.toFloat(), 20.toFloat(), 20.toFloat(), 20.toFloat(), p)
+        canvas.drawLine(20.toFloat(), heightDisplay.toFloat() - 20.toFloat(), widthDisplay.toFloat() - 20.toFloat(), heightDisplay.toFloat() - 20.toFloat(), p)
+        canvas.drawLine((widthDisplay.toFloat() - 40.toFloat()) / 2 + 20.toFloat(), 20.toFloat(), (widthDisplay.toFloat() - 40.toFloat()) / 2 + 20.toFloat(), heightDisplay.toFloat() - 20.toFloat(), p)
+        canvas.drawCircle(widthDisplay.toFloat()/2.toFloat(), heightDisplay.toFloat() / 2.toFloat(), heightDisplay.toFloat()/8, p)
+
+        canvas.drawLine(10.toFloat(), heightDisplay.toFloat() / 2.toFloat() - 15.toFloat(), 20.toFloat(), heightDisplay.toFloat() / 2.toFloat() - 15.toFloat(), p)
+        canvas.drawLine(10.toFloat(), heightDisplay.toFloat() / 2.toFloat() + 15.toFloat(), 20.toFloat(), heightDisplay.toFloat() / 2.toFloat() + 15.toFloat(), p)
+        canvas.drawLine(10.toFloat(), heightDisplay.toFloat() / 2.toFloat() - 15.toFloat(), 10.toFloat(), heightDisplay.toFloat() / 2.toFloat() + 15.toFloat(), p)
+
+        canvas.drawLine(widthDisplay.toFloat() - 10.toFloat(), heightDisplay.toFloat() / 2.toFloat() - 15.toFloat(), widthDisplay.toFloat() - 20.toFloat(), heightDisplay.toFloat() / 2.toFloat() - 15.toFloat(), p)
+        canvas.drawLine(widthDisplay.toFloat() - 10.toFloat(), heightDisplay.toFloat() / 2.toFloat() + 15.toFloat(), widthDisplay.toFloat() - 20.toFloat(), heightDisplay.toFloat() / 2.toFloat() + 15.toFloat(), p)
+        canvas.drawLine(widthDisplay.toFloat() - 10.toFloat(), heightDisplay.toFloat() / 2.toFloat() - 15.toFloat(), widthDisplay.toFloat() - 10.toFloat(), heightDisplay.toFloat() / 2.toFloat() + 15.toFloat(), p)
+
+        canvas.drawLine(20.toFloat(), heightDisplay.toFloat() / 2.toFloat() - 30.toFloat(), 40.toFloat(), heightDisplay.toFloat() / 2.toFloat() - 30.toFloat(), p)
+        canvas.drawLine(20.toFloat(), heightDisplay.toFloat() / 2.toFloat() + 30.toFloat(), 40.toFloat(), heightDisplay.toFloat() / 2.toFloat() + 30.toFloat(), p)
+        canvas.drawLine(40.toFloat(), heightDisplay.toFloat() / 2.toFloat() - 30.toFloat(), 40.toFloat(), heightDisplay.toFloat() / 2.toFloat() + 30.toFloat(), p)
+
+        canvas.drawLine(widthDisplay.toFloat() - 20.toFloat(), heightDisplay.toFloat() / 2.toFloat() - 30.toFloat(), widthDisplay.toFloat() - 40.toFloat(), heightDisplay.toFloat() / 2.toFloat() - 30.toFloat(), p)
+        canvas.drawLine(widthDisplay.toFloat() - 20.toFloat(), heightDisplay.toFloat() / 2.toFloat() + 30.toFloat(), widthDisplay.toFloat() - 40.toFloat(), heightDisplay.toFloat() / 2.toFloat() + 30.toFloat(), p)
+        canvas.drawLine(widthDisplay.toFloat() - 40.toFloat(), heightDisplay.toFloat() / 2.toFloat() - 30.toFloat(), widthDisplay.toFloat() - 40.toFloat(), heightDisplay.toFloat() / 2.toFloat() + 30.toFloat(), p)
+
+        canvas.drawLine(20.toFloat(), heightDisplay.toFloat() / 2.toFloat() - 100.toFloat(), 120.toFloat(), heightDisplay.toFloat() / 2.toFloat() - 100.toFloat(), p)
+        canvas.drawLine(20.toFloat(), heightDisplay.toFloat() / 2.toFloat() + 100.toFloat(), 120.toFloat(), heightDisplay.toFloat() / 2.toFloat() + 100.toFloat(), p)
+        canvas.drawLine(120.toFloat(), heightDisplay.toFloat() / 2.toFloat() - 100.toFloat(), 120.toFloat(), heightDisplay.toFloat() / 2.toFloat() + 100.toFloat(), p)
+
+        canvas.drawLine(widthDisplay.toFloat() - 20.toFloat(), heightDisplay.toFloat() / 2.toFloat() - 100.toFloat(), widthDisplay.toFloat() - 120.toFloat(), heightDisplay.toFloat() / 2.toFloat() - 100.toFloat(), p)
+        canvas.drawLine(widthDisplay.toFloat() - 20.toFloat(), heightDisplay.toFloat() / 2.toFloat() + 100.toFloat(), widthDisplay.toFloat() - 120.toFloat(), heightDisplay.toFloat() / 2.toFloat() + 100.toFloat(), p)
+        canvas.drawLine(widthDisplay.toFloat() - 120.toFloat(), heightDisplay.toFloat() / 2.toFloat() - 100.toFloat(), widthDisplay.toFloat() - 120.toFloat(), heightDisplay.toFloat() / 2.toFloat() + 100.toFloat(), p)
     }
 
     public override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -96,7 +138,7 @@ class Field(content: Context) : View(content) {
 
     //==========================================================
     private inner class Client : AsyncTask<Void, String, String>() {
-        private val SERVER_IP   = "192.168.0.104"
+        private val SERVER_IP   = "192.168.0.103"
         private val SERVER_PORT = 8080
         public  var toSend      = false
 

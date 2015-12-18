@@ -5,6 +5,10 @@ import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.Window
 import android.view.WindowManager
+import android.net.Uri;
+import android.widget.MediaController;
+import android.widget.VideoView;
+
 
 class MainActivity: Activity() {
 
@@ -17,4 +21,5 @@ class MainActivity: Activity() {
 
         setContentView(Field(this))
     }
+    
 }
