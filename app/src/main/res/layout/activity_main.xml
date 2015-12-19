@@ -1,13 +1,36 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                tools:context="${relativePackage}.${activityClass}">
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@drawable/pixel_islands">
+<Button
+        android:id="@+id/ip_button"
+        android:layout_width="270dp"
+        android:layout_height="100dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerInParent="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center"
+        android:textSize="40sp"
+        android:text="WRITE IP"
+        />
 
-    <ImageView
-            android:src = "@drawable/field"
-            android:rotation="180"
-            android:scaleType="fitCenter"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent" />
-</RelativeLayout>
+<TextView
+        android:id="@+id/final_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+</TextView>
+
+    <Button
+            android:id="@+id/buttonStart"
+            android:layout_width="270dp"
+            android:layout_height="100dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:textSize="40sp"
+            android:text="START" />
+
+</LinearLayout>
