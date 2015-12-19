@@ -28,8 +28,8 @@ class Field(content: Context) : View(content) {
     private val roboRadius      : Float
     private val eX              : Float
     private val eY              : Float
-    var heightDisplay: Int = 0
-    var widthDisplay: Int = 0
+    var heightDisplay           :Int = 0
+    var widthDisplay            :Int = 0
 
     init {
         roboPaint.color = Color.BLUE
@@ -45,6 +45,7 @@ class Field(content: Context) : View(content) {
     }
 
     public override fun onDraw(canvas: Canvas) {
+
         super.onDraw(canvas)
         if(firstRun) {
             netClient.execute()
@@ -137,10 +138,10 @@ class Field(content: Context) : View(content) {
 
 
     //==========================================================
-    private inner class Client : AsyncTask<Void, String, String>() {
-        private val SERVER_IP   = "192.168.0.103"
-        private val SERVER_PORT = 8080
-        public  var toSend      = false
+     inner class Client : AsyncTask<Void, String, String>() {
+        public  var  SERVER_IP   = "192.168.0.103"
+        private val SERVER_PORT  = 8080
+        public  var toSend       = false
 
         protected override fun doInBackground(vararg arg0: Void): String {
             var socket = Socket()
