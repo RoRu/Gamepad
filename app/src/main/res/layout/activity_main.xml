@@ -1,12 +1,30 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="${relativePackage}.${activityClass}">
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@drawable/pixel_islands">
+<Button
+        android:id="@+id/ip_button"
+        android:layout_width="270dp"
+        android:layout_height="100dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerInParent="true"
+        android:layout_centerVertical="true"
+        android:textSize="40sp"
+        android:text="WRITE IP"
+        android:layout_gravity="bottom|center"/>
 
     <TextView
-        android:text="@string/hello_world"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+            android:id="@+id/final_text"
+            android:layout_width="match_parent"
+            android:layout_height="31dp" android:layout_gravity="center" android:visibility="visible">
+    </TextView>
+    <Button
+            android:id="@+id/buttonStart"
+            android:layout_width="270dp"
+            android:layout_height="100dp"
+            android:textSize="40sp"
+            android:text="START" android:layout_gravity="center"/>
 
-</RelativeLayout>
+</LinearLayout>

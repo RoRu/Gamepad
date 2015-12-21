@@ -1,20 +1,54 @@
 package com.nutrix.gamepad.app
 
 import android.app.Activity
-import android.content.pm.ActivityInfo
+import android.app.AlertDialog
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
-import android.view.Window
-import android.view.WindowManager
+import android.view.LayoutInflater
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
 
-class MainActivity: Activity() {
+public class MainActivity: Activity() {
+    internal val context: Context = this
+    private  var buttonIP: Button? = null
+    private  var final_text: TextView? = null
 
-    protected override fun onCreate(savedInstanceState: Bundle?) {
+    public override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE
-        requestWindowFeature(Window.FEATURE_NO_TITLE)
-        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                        WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        setContentView(R.layout.activity_main)
 
-        setContentView(Field(this))
+        val buttonStart = findViewById(R.id.buttonStart) as Button
+        buttonStart.setOnClickListener {
+            val secAct = Intent(applicationContext, ActivityField::class.java)
+            secAct.putExtra("ipConf", final_text!!.text.toString())
+            startActivity(secAct)
+        }
+
+        buttonIP = findViewById(R.id.ip_button) as Button
+        final_text = findViewById(R.id.final_text) as TextView
+
+
+        buttonIP!!.setOnClickListener {
+            val li = LayoutInflater.from(context)
+            val promptsView = li.inflate(R.layout.prompt, null)
+
+            val mDialogBuilder = AlertDialog.Builder(context)
+
+            mDialogBuilder.setView(promptsView)
+
+            val userInput = promptsView.findViewById(R.id.input_text) as EditText
+
+            mDialogBuilder.setCancelable(false).setPositiveButton("OK"
+            ) { dialog, id ->
+                final_text!!.text = userInput.text
+            }.setNegativeButton("Cancel"
+            ) { dialog, id -> dialog.cancel() }
+
+            val alertDialog = mDialogBuilder.create()
+            alertDialog.show()
+        }
     }
 }
