@@ -16,17 +16,25 @@ public class MainActivity: Activity() {
     private  var final_text: TextView? = null
 
     public override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         val buttonStart = findViewById(R.id.buttonStart) as Button
         buttonStart.setOnClickListener {
-            val SecAct = Intent(applicationContext, ActivityField::class.java)
-            startActivity(SecAct)
+            val secAct = Intent(applicationContext, ActivityField::class.java)
+            secAct.putExtra("ipConf", final_text!!.text.toString())
+            startActivity(secAct)
+        }
+
+        val buttonAbout = findViewById(R.id.buttonAbout) as Button
+        buttonAbout.setOnClickListener {
+            val thAct = Intent(applicationContext, AboutActivity::class.java)
+            startActivity(thAct)
         }
 
         buttonIP = findViewById(R.id.ip_button) as Button
-        final_text = findViewById(R.id.final_text) as TextView
+        final_text = findViewById(R.id.about_text) as TextView
 
         buttonIP!!.setOnClickListener {
             val li = LayoutInflater.from(context)
@@ -46,7 +54,6 @@ public class MainActivity: Activity() {
 
             val alertDialog = mDialogBuilder.create()
             alertDialog.show()
-            intent.putExtra(userInput.toString(), 0)
         }
     }
 }

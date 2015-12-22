@@ -14,10 +14,13 @@ class ActivityField : Activity() {
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN)
-        setContentView(Field(this))
-      /*  var k = getIntent().getStringArrayExtra("IP")*/
-      /*  val sendIP = Intent(applicationContext, Field::class.java)
-        sendIP.putExtra(k.toString(),0)
-        */
+        val fuct = Intent(applicationContext, MainActivity::class.java)
+        val extras = intent.extras
+        var ipAdr = ""
+        if(extras != null) {
+            ipAdr = extras.getString("ipConf")
+        }
+
+        setContentView(Field(this, ipAdr))
     }
 }

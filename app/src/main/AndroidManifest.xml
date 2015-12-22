@@ -24,6 +24,9 @@
                   android:label="Test">
         </activity>
 
+        <activity android:name=".AboutActivity"
+                  android:label="about"></activity>
+
     </application>
 
 </manifest>

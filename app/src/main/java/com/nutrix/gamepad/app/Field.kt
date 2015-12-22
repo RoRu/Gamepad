@@ -13,7 +13,7 @@ import java.net.UnknownHostException
 import android.os.AsyncTask
 import kotlin.IntArray
 
-class Field(content: Context) : View(content) {
+class Field(content: Context, val ipSended: String) : View(content) {
 
     public  var robotsNum       = 2
     private val robots          = Array(robotsNum)
@@ -22,17 +22,16 @@ class Field(content: Context) : View(content) {
     private val roboPaint       = Paint()
     private var p               = Paint()
     private var robotSelected   = -1
-    private val netClient       = Client()
+    private val netClient       = Client(ipSended)
     private var messageToServer = ""
     private var firstRun        = true
     private val roboRadius      : Float
     private val eX              : Float
     private val eY              : Float
-    var heightDisplay           :Int = 0
-    var widthDisplay            :Int = 0
 
     init {
         roboPaint.color = Color.BLUE
+
 
         val dispM  = context.resources.displayMetrics
         roboRadius = dispM.heightPixels.toFloat() / 20f
@@ -41,7 +40,7 @@ class Field(content: Context) : View(content) {
 
         isFocusableInTouchMode = true
         isClickable            = true
-        isLongClickable        = false
+        //isLongClickable        = false
     }
 
     public override fun onDraw(canvas: Canvas) {
@@ -61,40 +60,40 @@ class Field(content: Context) : View(content) {
 
     public fun drawField(canvas: Canvas, p: Paint) {
         //DRAW FIELD
-        p.setColor(Color.WHITE)
-        p.setStyle(Paint.Style.STROKE)
-        heightDisplay = getHeight()
-        widthDisplay = getWidth()
-        canvas.drawLine(20.toFloat(), 20.toFloat(), 20.toFloat(), heightDisplay.toFloat() - 20.toFloat(), p)
-        canvas.drawLine(widthDisplay.toFloat() - 20.toFloat(), 20.toFloat(), widthDisplay.toFloat() - 20.toFloat(), heightDisplay.toFloat() - 20.toFloat(), p)
-        canvas.drawLine(widthDisplay.toFloat() - 20.toFloat(), 20.toFloat(), 20.toFloat(), 20.toFloat(), p)
-        canvas.drawLine(20.toFloat(), heightDisplay.toFloat() - 20.toFloat(), widthDisplay.toFloat() - 20.toFloat(), heightDisplay.toFloat() - 20.toFloat(), p)
-        canvas.drawLine((widthDisplay.toFloat() - 40.toFloat()) / 2 + 20.toFloat(), 20.toFloat(), (widthDisplay.toFloat() - 40.toFloat()) / 2 + 20.toFloat(), heightDisplay.toFloat() - 20.toFloat(), p)
-        canvas.drawCircle(widthDisplay.toFloat()/2.toFloat(), heightDisplay.toFloat() / 2.toFloat(), heightDisplay.toFloat()/8, p)
+        p.color = Color.WHITE
+        p.style = Paint.Style.STROKE
+        val height = height
+        val width  = width
+        canvas.drawLine(20f, 20f, 20f, height - 20f, p)
+        canvas.drawLine(width - 20f, 20f, width - 20f, height - 20f, p)
+        canvas.drawLine(width - 20f, 20f, 20f, 20f, p)
+        canvas.drawLine(20f, height - 20f, width - 20f, height - 20f, p)
+        canvas.drawLine((width - 40f) / 2 + 20f, 20f, (width - 40f) / 2 + 20f, height - 20f, p)
+        canvas.drawCircle(width/2f, height / 2f, height / 8f, p)
 
-        canvas.drawLine(10.toFloat(), heightDisplay.toFloat() / 2.toFloat() - 15.toFloat(), 20.toFloat(), heightDisplay.toFloat() / 2.toFloat() - 15.toFloat(), p)
-        canvas.drawLine(10.toFloat(), heightDisplay.toFloat() / 2.toFloat() + 15.toFloat(), 20.toFloat(), heightDisplay.toFloat() / 2.toFloat() + 15.toFloat(), p)
-        canvas.drawLine(10.toFloat(), heightDisplay.toFloat() / 2.toFloat() - 15.toFloat(), 10.toFloat(), heightDisplay.toFloat() / 2.toFloat() + 15.toFloat(), p)
+        canvas.drawLine(10f, height / 2f - 15f, 20f, height / 2f - 15f, p)
+        canvas.drawLine(10f, height / 2f + 15f, 20f, height / 2f + 15f, p)
+        canvas.drawLine(10f, height / 2f - 15f, 10f, height / 2f + 15f, p)
 
-        canvas.drawLine(widthDisplay.toFloat() - 10.toFloat(), heightDisplay.toFloat() / 2.toFloat() - 15.toFloat(), widthDisplay.toFloat() - 20.toFloat(), heightDisplay.toFloat() / 2.toFloat() - 15.toFloat(), p)
-        canvas.drawLine(widthDisplay.toFloat() - 10.toFloat(), heightDisplay.toFloat() / 2.toFloat() + 15.toFloat(), widthDisplay.toFloat() - 20.toFloat(), heightDisplay.toFloat() / 2.toFloat() + 15.toFloat(), p)
-        canvas.drawLine(widthDisplay.toFloat() - 10.toFloat(), heightDisplay.toFloat() / 2.toFloat() - 15.toFloat(), widthDisplay.toFloat() - 10.toFloat(), heightDisplay.toFloat() / 2.toFloat() + 15.toFloat(), p)
+        canvas.drawLine(width - 10f, height / 2f - 15f, width - 20f, height / 2f - 15f, p)
+        canvas.drawLine(width - 10f, height / 2f + 15f, width - 20f, height / 2f + 15f, p)
+        canvas.drawLine(width - 10f, height / 2f - 15f, width - 10f, height / 2f + 15f, p)
 
-        canvas.drawLine(20.toFloat(), heightDisplay.toFloat() / 2.toFloat() - 30.toFloat(), 40.toFloat(), heightDisplay.toFloat() / 2.toFloat() - 30.toFloat(), p)
-        canvas.drawLine(20.toFloat(), heightDisplay.toFloat() / 2.toFloat() + 30.toFloat(), 40.toFloat(), heightDisplay.toFloat() / 2.toFloat() + 30.toFloat(), p)
-        canvas.drawLine(40.toFloat(), heightDisplay.toFloat() / 2.toFloat() - 30.toFloat(), 40.toFloat(), heightDisplay.toFloat() / 2.toFloat() + 30.toFloat(), p)
+        canvas.drawLine(20f, height / 2f - 30f, 40f, height / 2f - 30f, p)
+        canvas.drawLine(20f, height / 2f + 30f, 40f, height / 2f + 30f, p)
+        canvas.drawLine(40f, height / 2f - 30f, 40f, height / 2f + 30f, p)
 
-        canvas.drawLine(widthDisplay.toFloat() - 20.toFloat(), heightDisplay.toFloat() / 2.toFloat() - 30.toFloat(), widthDisplay.toFloat() - 40.toFloat(), heightDisplay.toFloat() / 2.toFloat() - 30.toFloat(), p)
-        canvas.drawLine(widthDisplay.toFloat() - 20.toFloat(), heightDisplay.toFloat() / 2.toFloat() + 30.toFloat(), widthDisplay.toFloat() - 40.toFloat(), heightDisplay.toFloat() / 2.toFloat() + 30.toFloat(), p)
-        canvas.drawLine(widthDisplay.toFloat() - 40.toFloat(), heightDisplay.toFloat() / 2.toFloat() - 30.toFloat(), widthDisplay.toFloat() - 40.toFloat(), heightDisplay.toFloat() / 2.toFloat() + 30.toFloat(), p)
+        canvas.drawLine(width - 20f, height / 2f - 30f, width - 40f, height / 2f - 30f, p)
+        canvas.drawLine(width - 20f, height / 2f + 30f, width - 40f, height / 2f + 30f, p)
+        canvas.drawLine(width - 40f, height / 2f - 30f, width - 40f, height / 2f + 30f, p)
 
-        canvas.drawLine(20.toFloat(), heightDisplay.toFloat() / 2.toFloat() - 100.toFloat(), 120.toFloat(), heightDisplay.toFloat() / 2.toFloat() - 100.toFloat(), p)
-        canvas.drawLine(20.toFloat(), heightDisplay.toFloat() / 2.toFloat() + 100.toFloat(), 120.toFloat(), heightDisplay.toFloat() / 2.toFloat() + 100.toFloat(), p)
-        canvas.drawLine(120.toFloat(), heightDisplay.toFloat() / 2.toFloat() - 100.toFloat(), 120.toFloat(), heightDisplay.toFloat() / 2.toFloat() + 100.toFloat(), p)
+        canvas.drawLine(20f, height / 2f - 100f, 120f, height / 2f - 100f, p)
+        canvas.drawLine(20f, height / 2f + 100f, 120f, height / 2f + 100f, p)
+        canvas.drawLine(120f, height / 2f - 100f, 120f, height / 2f + 100f, p)
 
-        canvas.drawLine(widthDisplay.toFloat() - 20.toFloat(), heightDisplay.toFloat() / 2.toFloat() - 100.toFloat(), widthDisplay.toFloat() - 120.toFloat(), heightDisplay.toFloat() / 2.toFloat() - 100.toFloat(), p)
-        canvas.drawLine(widthDisplay.toFloat() - 20.toFloat(), heightDisplay.toFloat() / 2.toFloat() + 100.toFloat(), widthDisplay.toFloat() - 120.toFloat(), heightDisplay.toFloat() / 2.toFloat() + 100.toFloat(), p)
-        canvas.drawLine(widthDisplay.toFloat() - 120.toFloat(), heightDisplay.toFloat() / 2.toFloat() - 100.toFloat(), widthDisplay.toFloat() - 120.toFloat(), heightDisplay.toFloat() / 2.toFloat() + 100.toFloat(), p)
+        canvas.drawLine(width - 20f, height / 2f - 100f, width - 120f, height / 2f - 100f, p)
+        canvas.drawLine(width - 20f, height / 2f + 100f, width - 120f, height / 2f + 100f, p)
+        canvas.drawLine(width - 120f, height / 2f - 100f, width - 120f, height / 2f + 100f, p)
     }
 
     public override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -138,8 +137,8 @@ class Field(content: Context) : View(content) {
 
 
     //==========================================================
-     inner class Client : AsyncTask<Void, String, String>() {
-        public  var  SERVER_IP   = "192.168.0.103"
+    inner class Client(server_ip: String) : AsyncTask<Void, String, String>() {
+        public  var SERVER_IP   = server_ip
         private val SERVER_PORT  = 8080
         public  var toSend       = false
 
