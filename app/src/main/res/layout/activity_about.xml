@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:orientation="horizontal"
+              android:background="@drawable/about">
+
+    <TextView
+            android:text="\n\n
+        Полуавтономный робофутбол. \n\n
+        Первым делом следует ввеcти ip-адрес локальной сети, в которой вы находитесь.\n
+        Для этого нажмите на кнопку WRITE IP.\n
+        Затем введите ip-адрес(например: 192.168.0.103) и нажмите на кнопку OK.\n\n
+        Подготовительные действия окончены, теперь можно начинать игру!\n\n
+        Нажмите кнопку START.\n
+        На поле две команды роботов, вы можете управлять только своей командой.\n
+        Достаточно нажать на робота и указать точку, в которую хотите его направить.\n
+        Побеждает та команда, которая забьет 5 голов в ворота соперников. \n\n
+        LET'S START!\n\n\n\n\n\n\n\n
+        Мат-мех, СПбГУ \n
+        2015\n"
+            android:layout_alignParentLeft="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:textSize="20sp">
+    </TextView>
+
+</LinearLayout>
