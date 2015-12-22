@@ -2,6 +2,5 @@
     <string name="app_name">Gamepad</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="START">START</string>
-    <string name="SET_IP">WRITE IP</string>
+    <string name="rules"></string>
 </resources>

@@ -27,9 +27,14 @@ public class MainActivity: Activity() {
             startActivity(secAct)
         }
 
-        buttonIP = findViewById(R.id.ip_button) as Button
-        final_text = findViewById(R.id.final_text) as TextView
+        val buttonAbout = findViewById(R.id.buttonAbout) as Button
+        buttonAbout.setOnClickListener {
+            val thAct = Intent(applicationContext, AboutActivity::class.java)
+            startActivity(thAct)
+        }
 
+        buttonIP = findViewById(R.id.ip_button) as Button
+        final_text = findViewById(R.id.about_text) as TextView
 
         buttonIP!!.setOnClickListener {
             val li = LayoutInflater.from(context)
