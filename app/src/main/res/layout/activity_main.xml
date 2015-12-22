@@ -1,30 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="@drawable/pixel_islands">
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:background="@drawable/pixel_islands" android:weightSum="1"
+>
 <Button
         android:id="@+id/ip_button"
         android:layout_width="270dp"
-        android:layout_height="100dp"
-        android:layout_alignParentLeft="true"
-        android:layout_centerInParent="true"
-        android:layout_centerVertical="true"
+        android:layout_height="65dp"
         android:textSize="40sp"
-        android:text="WRITE IP"
-        android:layout_gravity="bottom|center"/>
+        android:text="SET IP"
+        android:layout_below="@+id/buttonStart" android:layout_centerHorizontal="true"/>
 
     <TextView
             android:id="@+id/final_text"
             android:layout_width="match_parent"
-            android:layout_height="31dp" android:layout_gravity="center" android:visibility="visible">
+            android:layout_height="31dp" android:layout_gravity="center" android:visibility="invisible">
     </TextView>
     <Button
             android:id="@+id/buttonStart"
             android:layout_width="270dp"
-            android:layout_height="100dp"
+            android:layout_height="65dp"
             android:textSize="40sp"
-            android:text="START" android:layout_gravity="center"/>
+            android:text="@string/START"
+            android:layout_gravity="center"
+            android:layout_marginTop="150dp"
+            android:layout_alignWithParentIfMissing="false"
+            android:layout_below="@+id/final_text" android:layout_alignLeft="@+id/ip_button"
+            android:layout_alignStart="@+id/ip_button" android:layout_centerHorizontal="true"/>
 
-</LinearLayout>
+</RelativeLayout>
