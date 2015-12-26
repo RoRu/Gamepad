@@ -14,7 +14,6 @@ import android.os.AsyncTask
 import kotlin.IntArray
 
 class Field(content: Context, val ipSended: String) : View(content) {
-
     public  var robotsNum1      = 0
     public  var robotsNum2      = 0
     private var robots1         = Array(0)
@@ -52,6 +51,7 @@ class Field(content: Context, val ipSended: String) : View(content) {
         ghostPaint.color = Color.YELLOW
         ghostPaint.alpha = 125
 
+
         val dispM  = context.resources.displayMetrics
         roboRadius = dispM.heightPixels.toFloat() / 20f
         eY = dispM.heightPixels.toFloat() / 480f
@@ -69,7 +69,6 @@ class Field(content: Context, val ipSended: String) : View(content) {
             netClient.execute()
             firstRun = false
         }
-
 
         canvas.drawColor(Color.rgb(0, 139, 69))
         drawField(canvas, p)
