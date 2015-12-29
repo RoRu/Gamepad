@@ -11,23 +11,25 @@ import java.io.*
 import java.net.Socket
 import java.net.UnknownHostException
 import android.os.AsyncTask
+import java.util.*
 import kotlin.IntArray
 
 class Field(content: Context, val ipSended: String) : View(content) {
     public  var robotsNum1      = 0
     public  var robotsNum2      = 0
-    private var robots1         = Array(0)
+    private var robots1         = Array(5)
                                 { RectF(0f, 0f, 0f, 0f) }
-    private var robots2         = Array(0)
+    private var robots2         = Array(5)
                                 { RectF(0f, 0f, 0f, 0f) }
-    private var curCoords       = IntArray(0)
+    private var indices1        = IntArray(5)
+    private var curCoords       = emptyList<Int>()
     private val roboPaint1      = Paint()
     private val roboPaint2      = Paint()
     private val p               = Paint()
     private val selectedPaint   = Paint()
     private var robotSelected   = -1
     private val netClient       = Client(ipSended)
-    private var moveToCoords    = Array(0) { "" }
+    private var moveToCoords    = Array(5) { "" }
     private var messageToServer = ""
     private var firstRun        = true
     private val roboRadius      : Float
@@ -35,18 +37,21 @@ class Field(content: Context, val ipSended: String) : View(content) {
     private val eY              : Float
     private val ghostRobot      = RectF(0f, 0f, 0f, 0f)
     private val ghostPaint      = Paint()
-    /*private var ghostX          = 0f
-    private var ghostY          = 0f*/
+    private var oldNum1         = 0
+    private var oldNum2         = 0
+    private var player          = 2
     var startInRob = false
-    /*private var txt = "It's me!"
-    private val tPaint = Paint()*/
+    private var txt = "It's me!"
+    private val tPaint = Paint()
 
     init {
+        p.color = Color.WHITE
+        p.style = Paint.Style.STROKE
         roboPaint1.color = Color.BLUE
         roboPaint2.color = Color.RED
-        /*tPaint.color = Color.BLACK
+        tPaint.color = Color.BLACK
         tPaint.textSize = 36f;
-        tPaint.style = Paint.Style.STROKE*/
+        tPaint.style = Paint.Style.STROKE
         selectedPaint.color = Color.YELLOW
         ghostPaint.color = Color.YELLOW
         ghostPaint.alpha = 125
@@ -54,12 +59,11 @@ class Field(content: Context, val ipSended: String) : View(content) {
 
         val dispM  = context.resources.displayMetrics
         roboRadius = dispM.heightPixels.toFloat() / 20f
-        eY = dispM.heightPixels.toFloat() / 480f
-        eX = dispM.widthPixels.toFloat() / 640f
+        eY = dispM.heightPixels.toFloat() / 400f
+        eX = dispM.widthPixels.toFloat() / 600f
 
         isFocusableInTouchMode = true
         isClickable            = true
-        //isLongClickable        = false
     }
 
     public override fun onDraw(canvas: Canvas) {
@@ -72,7 +76,7 @@ class Field(content: Context, val ipSended: String) : View(content) {
 
         canvas.drawColor(Color.rgb(0, 139, 69))
         drawField(canvas, p)
-        //canvas.drawText(txt, 600f, 700f, tPaint)
+        canvas.drawText(txt, 600f, 100f, tPaint)
         for(r in robots1)
             canvas.drawRoundRect(r, 150f, 150f, roboPaint1)
         if(robotSelected != -1) {
@@ -86,25 +90,6 @@ class Field(content: Context, val ipSended: String) : View(content) {
 
     public override fun onTouchEvent(event: MotionEvent): Boolean {
 
-       /* val newX = event.x
-        val newY = event.y
-        if(event.action == MotionEvent.ACTION_DOWN) {
-            for (i in robots1.indices) {
-                if (robots1[i].contains(newX, newY)) {
-                    robotSelected = i
-                    return true
-                }
-            }
-        }
-        if(robotSelected != -1) {
-            robots1[robotSelected].offsetTo(newX - roboRadius, newY - roboRadius)
-            curCoords[robotSelected * 3 + 1] = (newX / eX).toInt()
-            curCoords[robotSelected * 3 + 2] = (newY / eY).toInt()
-            messageToServer  = curCoords.joinToString(" ")
-            netClient.toSend = true
-            invalidate()
-        }
-        return false*/
         val newX = event.x
         val newY = event.y
         when(event.action) {
@@ -114,10 +99,8 @@ class Field(content: Context, val ipSended: String) : View(content) {
                         robotSelected = i
                         startInRob = true
                         ghostRobot.set(robots1[i])
-                  //      return true
                     }
                 }
-                //startInRob = false
             }
             MotionEvent.ACTION_MOVE -> {
                 if(startInRob) {
@@ -129,7 +112,7 @@ class Field(content: Context, val ipSended: String) : View(content) {
                 if(startInRob) {
                     startInRob = false
                     moveToCoords[robotSelected] = "${robotSelected + 1} ${(newX / eX).toInt()} ${(newY / eY).toInt()}"
-                    messageToServer = "$robotsNum1 ${moveToCoords.joinToString(" ")}"
+                    messageToServer = "$player ${moveToCoords[robotSelected]}"
                     netClient.toSend = true
                 }
             }
@@ -137,63 +120,32 @@ class Field(content: Context, val ipSended: String) : View(content) {
         return true
     }
 
-    private fun setCoordinates(crds: String) {
-        val sz: Int = crds.count { c -> c == ' ' }
-        curCoords = IntArray(sz + 1)
-        stringParse(crds)
-        robotsNum1 = curCoords[0]
-        moveToCoords = Array(robotsNum1) { "" }
-        robots1 = Array(robotsNum1) { RectF(0f, 0f, 0f, 0f) }
-        robotsNum2 = curCoords[robotsNum1 * 3 + 1]
-        robots2 = Array(robotsNum2) { RectF(0f, 0f, 0f, 0f) }
-
-        for(i in 2..robotsNum1 * 3 - 1 step 3) {
-            var left = curCoords[ i ] * eX - roboRadius
-            var top  = curCoords[i+1] * eY - roboRadius
-            var ind  = curCoords[i-1] - 1
-            robots1[ind].set(left, top, left + 2 * roboRadius,
-                    top  + 2 * roboRadius)
-            moveToCoords[ind] = "${ind + 1} ${curCoords[i]} ${curCoords[i + 1]}"
+    private fun updateCanvas() {
+        var j = 0
+        for (i in 2..robotsNum1 * 3 - 1 step 3) {
+            var left = curCoords[i] * eX - roboRadius
+            var top = curCoords[i + 1] * eY - roboRadius
+            indices1[j] = curCoords[i - 1]
+            robots1[j].set(left, top, left + 2 * roboRadius,
+                    top + 2 * roboRadius)
+            moveToCoords[j] = "${indices1[j] + 1} ${curCoords[i]} ${curCoords[i + 1]}"
+            j++
         }
 
-        for(i in robotsNum1*3+3..curCoords.size - 2 step 3) {
-            val left = curCoords[ i ] * eX - roboRadius
-            val top  = curCoords[i+1] * eY - roboRadius
-            robots2[curCoords[i-1] - 1].set(left, top, left + 2 * roboRadius,
-                    top  + 2 * roboRadius)
+        j = 0
+        for (i in robotsNum1 * 3 + 3..curCoords.size - 2 step 3) {
+            val left = curCoords[i] * eX - roboRadius
+            val top = curCoords[i + 1] * eY - roboRadius
+            robots2[j].set(left, top, left + 2 * roboRadius,
+                    top + 2 * roboRadius)
+            j++
         }
         invalidate()
     }
-
-    private fun updateCanvas(newCoords: String) {
-        //txt = newCoords
-        stringParse(newCoords)
-        for(i in 2..robotsNum1 * 3 - 1 step 3) {
-            val left = curCoords[ i ] * eX - roboRadius
-            val top  = curCoords[i+1] * eY - roboRadius
-            robots1[curCoords[i-1] - 1].set(left, top, left + 2 * roboRadius,
-                    top  + 2 * roboRadius)
-        }
-
-        for(i in robotsNum1*3+3..curCoords.size - 2 step 3) {
-            val left = curCoords[ i ] * eX - roboRadius
-            val top  = curCoords[i+1] * eY - roboRadius
-            robots2[curCoords[i-1] - 1].set(left, top, left + 2 * roboRadius,
-                    top  + 2 * roboRadius)
-        }
-        invalidate()
-    }
-
-    private fun stringParse(message: String) {
-        val mesSplit = message.split(" ")
-        for(i in curCoords.indices)
-            curCoords[i] = mesSplit[i].toInt()
-    }
-
 
 
     //==========================================================
-    inner class Client(private val server_ip: String) : AsyncTask<Void, String, String>() {
+    inner class Client(private val server_ip: String): AsyncTask<Void, String, String>() {
         private val server_port  = 8080
         public  var toSend       = false
         private var first        = true
@@ -210,7 +162,10 @@ class Field(content: Context, val ipSended: String) : View(content) {
                 val sin  = socket.inputStream.bufferedReader()
                 publishProgress(sin.readLine())
                 while(true) {
-                    if(toSend) sout.write(messageToServer.toByteArray())
+                    if(toSend) {
+                        sout.write(messageToServer.toByteArray())
+                        toSend = false
+                    }
                     publishProgress(sin.readLine())
                 }
             } catch (e: IOException) { e.printStackTrace() }
@@ -219,21 +174,32 @@ class Field(content: Context, val ipSended: String) : View(content) {
         }
 
         protected override fun onProgressUpdate(vararg values: String) {
-            if(first) {
-                setCoordinates(values[0].dropLast(1))
-                first = false
-                return
+            if(player == 1) {
+                curCoords = values[0].split(" ").map { s -> s.toInt() }
+            } else {
+                val t = values[0].split(" ")
+                robotsNum1 = t[0].toInt()
+                robotsNum2 = t[robotsNum1 * 3 + 1].toInt()
+                val sb = StringBuilder()
+                for(i in t.slice(robotsNum1*3+1..mes.length - 1)) {
+                    sb.append("$i ")
+                }
+                sb.append(" ")
+                for(i in t.slice(0..robotsNum1*3)) {
+                    sb.append("$i ")
+                }
+                curCoords = sb.toString().split(" ").map { s -> s.toInt() }
             }
-            updateCanvas(values[0].dropLast(1))
+            updateCanvas()
         }
 
         protected override fun onPostExecute(result: String) { }
     }
+    //-------------------------------------------------------------------------
 
     public fun drawField(canvas: Canvas, p: Paint) {
         //DRAW FIELD
-        p.color = Color.WHITE
-        p.style = Paint.Style.STROKE
+
         val height = height
         val width  = width
         canvas.drawLine(20f, 20f, 20f, height - 20f, p)
